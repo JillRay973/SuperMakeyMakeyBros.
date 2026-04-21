@@ -189,10 +189,14 @@ function updatePlayer(p,lKey,rKey){
   if(both&&p.onGround&&!p._jl){p.vy=JUMP_VY-(p.big?.5:0);p.vx=0;p.onGround=false;p._jl=true;spawnParts(p.x+p.w/2,p.y+p.h,'#fff',4);}
   if(!both) p._jl=false;
   if(!both){
-    if(lD&&!rD){p.vx=-SPEED;p.dir=-1;}
-    else if(rD&&!lD){p.vx=SPEED;p.dir=1;}
+    if(lD&&!rD){if(p.onGround)p.vx=-SPEED;else p.vx=Math.max(p.vx,-SPEED);p.dir=-1;}
+    else if(rD&&!lD){if(p.onGround)p.vx=SPEED;else p.vx=Math.min(p.vx,SPEED);p.dir=1;}
     else p.vx*=0.8;
+  } else {
+    p.vx*=0.8;
   }
+  // no air-steering: if airborne and moving, don't let held keys sustain speed
+  if(!p.onGround){p.vx*=0.92;}
   p.vy+=GRAV;p.x+=p.vx;p.y+=p.vy;p.onGround=false;
   for(let pl of platforms){
     if(pl._destroy) continue;
@@ -651,7 +655,7 @@ function loop(){
     if(!p2.dead&&p2.respawnTimer===0&&p2.x+p2.w>flag.x&&p2.x<flag.x+20&&p2.y+p2.h>flag.y&&p2.y<flag.y+flag.h) flag.r2=true;
 
     let bothAtFlag=flag.r1&&flag.r2;
-    let gameOver=p1.dead&&p1.lives<=0&&p2.dead&&p2.lives<=0;
+    let gameOver=(p1.dead&&p1.lives<=0)||(p2.dead&&p2.lives<=0);
 
     if(bothAtFlag){
       state='win';
@@ -668,7 +672,7 @@ function loop(){
           'Stomp both arrows for next level!', true, true);
       }
     }
-    if(gameOver) showOverlay('💀 GAME OVER','Both players ran out of lives!','Stomp both arrows to retry!',true,false),state='dead';
+    if(gameOver) showOverlay('💀 GAME OVER','You ran out of lives!','Stomp both arrows to retry!',true,false),state='dead';
   }
 
   if(splitBlend<0.01){
@@ -691,7 +695,7 @@ function loop(){
 }
 
 resetGame();
-showOverlay('Super Makey Makey Bros.','Work together — reach the FLAG to win!','Stomp both arrows to start!');
+showOverlay('Super Makey Makey Bros.','Work together and reach the FLAG to win!','Stomp both arrows to start!');
 document.getElementById('ctrlInfo').style.display='block';
 loop();
 </script>
