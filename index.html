@@ -264,7 +264,7 @@ function updatePlayer(){
   if(p.dead) return;
   if(p.invTimer>0) p.invTimer--;
 
-  let lD=keys['ArrowLeft'],rD=keys['ArrowRight'],spD=keys[' ']||keys['ArrowUp'];
+  let lD=keys['ArrowLeft'],rD=keys['ArrowRight'],spD=keys['a']||keys['A']||keys['ArrowUp'];
 
   // jump: Space (or Up arrow as fallback)
   if(spD&&p.onGround&&!p._jl){
@@ -694,11 +694,11 @@ document.addEventListener('keydown',e=>{
   if(!keys[e.key]) kTime[e.key]=Date.now();
   keys[e.key]=true;
   if(state==='title'){
-    if(keys['ArrowLeft']||keys['ArrowRight']||keys[' ']||keys['ArrowUp']){
+    if(keys['ArrowLeft']||keys['ArrowRight']||keys['a']||keys['A']){
       state='playing';document.getElementById('overlay').style.display='none';playMusic();
     }
   }
-  if(state==='dead'&&(keys['ArrowLeft']||keys['ArrowRight']||keys[' '])){
+  if(state==='dead'&&(keys['ArrowLeft']||keys['ArrowRight']||keys['a']||keys['A'])){
     doRestart();
   }
   e.preventDefault();
